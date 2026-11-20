@@ -1,10 +1,11 @@
-// config/typeorm.config.ts
-import { DataSource } from 'typeorm';
+
 import 'dotenv/config';
+import { DataSource } from 'typeorm';
+import { buildDataSourceOptions } from './database.config.js';
+
 
 export default new DataSource({
-  type: 'postgres',
-  url: process.env.DATABASE_URL,
+  ...buildDataSourceOptions(process.env),
   entities: ['src/**/*.entity.ts'],
   migrations: ['src/database/migrations/*.ts'],
 });

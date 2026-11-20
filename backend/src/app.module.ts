@@ -4,6 +4,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { buildDataSourceOptions } from './config/database.config.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -15,17 +16,21 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'backend',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        ...buildDataSourceOptions({
+          NODE_ENV: config.getOrThrow('NODE_ENV'),
+          DB_HOST: config.getOrThrow('DB_HOST'),
+          DB_PORT: String(config.getOrThrow<number>('DB_PORT')),
+          DB_USERNAME: config.getOrThrow('DB_USERNAME'),
+          DB_PASSWORD: config.getOrThrow('DB_PASSWORD'),
+          DB_DATABASE: config.getOrThrow('DB_DATABASE'),
+          DB_SSL: String(config.get<boolean>('DB_SSL')),
+        }),
         autoLoadEntities: true,
-        synchronize: false,
+        retryAttempts: 5,
+        retryDelay: 3000,
       }),
     }),
   ],
