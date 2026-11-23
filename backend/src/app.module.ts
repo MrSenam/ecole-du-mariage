@@ -5,10 +5,7 @@ import { AppService } from './app.service.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { buildDataSourceOptions } from './config/database.config.js';
-import { UsersService } from './users/users/users.service.js';
-import { UsersService } from './users/users.service.js';
-import { RegistrationsService } from './registrations/registrations.service.js';
-import { RegistrationsController } from './registrations/registrations.controller.js';
+
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -38,7 +35,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       }),
     }),
   ],
-  controllers: [AppController, RegistrationsController],
-  providers: [AppService, UsersService, RegistrationsService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
